@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor Tally - Estilo Rosa</title>
-    
+    <title>Reproductor Tally - Autoplay</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
     
     <style>
-       
         html, body {
             width: 100%;
             height: 100%;
@@ -23,10 +21,9 @@
             overflow: hidden;
         }
 
-        
         .player-card {
-            background-color: #fdf0f5; /* Fondo rosa pastel */
-            border: 1px solid #fce1ea; /* Borde sutil */
+            background-color: #fdf0f5; 
+            border: 1px solid #fce1ea; 
             border-radius: 12px;
             padding: 20px;
             width: 90%;
@@ -37,7 +34,6 @@
             gap: 10px;
         }
 
-        /* Tiempos (0:00 - 3:43) */
         .time-display {
             display: flex;
             justify-content: space-between;
@@ -46,7 +42,6 @@
             letter-spacing: 0.5px;
         }
 
-       
         .progress-wrapper {
             position: relative;
             display: flex;
@@ -58,31 +53,28 @@
             -webkit-appearance: none;
             width: 100%;
             height: 6px;
-            background: #e2d3ec; /* Color de la barra vacía */
+            background: #e2d3ec; 
             border-radius: 10px;
             outline: none;
             cursor: pointer;
             z-index: 2;
         }
 
-        /* La parte que se va llenando (se controla por JS) */
         input[type="range"]::-webkit-slider-runnable-track {
             height: 6px;
             border-radius: 10px;
         }
 
-        /* El puntito redondo (thumb) */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            background: #9c6fbc; /* Color morado oscuro */
+            background: #9c6fbc; 
             cursor: pointer;
-            margin-top: -4px; /* Centrar el thumb */
+            margin-top: -4px; 
         }
 
-        /* Fila de controles */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -96,13 +88,12 @@
             gap: 15px;
         }
 
-        /* Botones generales */
         button {
             background: none;
             border: none;
             padding: 0;
             cursor: pointer;
-            color: #b391cb; /* Morado un poco más claro para los iconos */
+            color: #b391cb; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -114,57 +105,46 @@
         }
         
         button:hover {
-            color: #9c6fbc; /* Se oscurece al pasar el mouse */
+            color: #9c6fbc; 
         }
 
-        /* Tamaño de los iconos */
         svg {
             fill: currentColor;
             width: 24px;
             height: 24px;
         }
 
-        /* Icono de Play más grande */
         #playBtn svg {
             width: 32px;
             height: 32px;
-            color: #9c6fbc; /* El play resalta más */
+            color: #9c6fbc; 
         }
 
-        /* Iconos secundarios (repetir y volumen) un poco más chicos */
         .controls-right svg {
             width: 20px;
             height: 20px;
         }
-
     </style>
 </head>
 <body>
 
     <div class="player-card">
-        
-        <!-- Tiempos Arriba -->
         <div class="time-display">
             <span id="currentTime">0:00</span>
             <span id="durationTime">0:00</span>
         </div>
 
-        <!-- Barra de progreso -->
         <div class="progress-wrapper">
             <input type="range" id="progressBar" value="0" min="0" step="1">
         </div>
 
-        <!-- Botones Abajo -->
         <div class="controls">
-            <!-- Retroceder, Play/Pausa, Avanzar -->
             <div class="controls-left">
                 <button id="prevBtn" title="Retroceder">
                     <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
                 </button>
                 <button id="playBtn" title="Reproducir">
-                    <!-- Play Icon -->
                     <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    <!-- Pause Icon (Oculto) -->
                     <svg id="iconPause" style="display: none;" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                 </button>
                 <button id="nextBtn" title="Avanzar">
@@ -172,7 +152,6 @@
                 </button>
             </div>
 
-            <!-- Repetir y Volumen -->
             <div class="controls-right">
                 <button id="loopBtn" title="Repetir">
                     <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
@@ -184,7 +163,7 @@
         </div>
     </div>
 
-    <!-- AQUÍ PONES EL NOMBRE DE TU CANCIÓN -->
+    <!-- SE AGREGÓ "autoplay" AL FINAL DE ESTA LÍNEA -->
     <audio id="audioElement" src="cancion.mp3" preload="metadata" autoplay></audio>
 
     <script>
@@ -203,7 +182,6 @@
         let isPlaying = false;
         let isLooping = false;
 
-        // Formato de tiempo (Minutos:Segundos)
         function formatTime(seconds) {
             if (isNaN(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
@@ -211,60 +189,58 @@
             return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        // Actualizar colores de la barra de progreso
         function updateProgressBarColor() {
             const value = (progressBar.value / progressBar.max) * 100 || 0;
             progressBar.style.background = `linear-gradient(to right, #9c6fbc ${value}%, #e2d3ec ${value}%)`;
         }
 
-        // Al cargar la info del audio
         audio.addEventListener('loadedmetadata', () => {
             progressBar.max = audio.duration;
             durationTimeEl.textContent = formatTime(audio.duration);
             updateProgressBarColor();
         });
 
-        // Botón Play/Pausa
+        // Sincronizar iconos si el autoplay funciona
+        audio.addEventListener('play', () => {
+            isPlaying = true;
+            iconPlay.style.display = 'none';
+            iconPause.style.display = 'block';
+        });
+
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            iconPlay.style.display = 'block';
+            iconPause.style.display = 'none';
+        });
+
         playBtn.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
-                iconPlay.style.display = 'block';
-                iconPause.style.display = 'none';
             } else {
                 audio.play();
-                iconPlay.style.display = 'none';
-                iconPause.style.display = 'block';
             }
-            isPlaying = !isPlaying;
         });
 
-        // Actualizar barra mientras se reproduce
         audio.addEventListener('timeupdate', () => {
             progressBar.value = audio.currentTime;
             currentTimeEl.textContent = formatTime(audio.currentTime);
             updateProgressBarColor();
         });
 
-        // Mover la barra manualmente
         progressBar.addEventListener('input', () => {
             audio.currentTime = progressBar.value;
             currentTimeEl.textContent = formatTime(progressBar.value);
             updateProgressBarColor();
         });
 
-        // Al terminar la canción
         audio.addEventListener('ended', () => {
             if (!isLooping) {
-                iconPlay.style.display = 'block';
-                iconPause.style.display = 'none';
-                isPlaying = false;
                 progressBar.value = 0;
                 currentTimeEl.textContent = "0:00";
                 updateProgressBarColor();
             }
         });
 
-        // Adelantar / Atrasar (10 segundos)
         prevBtn.addEventListener('click', () => {
             audio.currentTime = Math.max(0, audio.currentTime - 10);
         });
@@ -272,14 +248,12 @@
             audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
         });
 
-        // Repetir (Loop)
         loopBtn.addEventListener('click', () => {
             isLooping = !isLooping;
             audio.loop = isLooping;
             loopBtn.style.color = isLooping ? "#9c6fbc" : "#b391cb";
         });
 
-        // Silenciar (Mute)
         muteBtn.addEventListener('click', () => {
             audio.muted = !audio.muted;
             muteBtn.style.opacity = audio.muted ? "0.5" : "1";

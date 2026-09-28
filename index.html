@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor Tally - Estilo Rosa</title>
     
-    <!-- Tipografía Lora -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
     
     <style>
-        /* Ajustes base para incrustar en Tally */
+       
         html, body {
             width: 100%;
             height: 100%;
@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Contenedor principal del reproductor */
+        
         .player-card {
             background-color: #fdf0f5; /* Fondo rosa pastel */
             border: 1px solid #fce1ea; /* Borde sutil */
@@ -46,7 +46,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Barra de progreso */
+       
         .progress-wrapper {
             position: relative;
             display: flex;
@@ -185,7 +185,7 @@
     </div>
 
     <!-- AQUÍ PONES EL NOMBRE DE TU CANCIÓN -->
-    <audio id="audioElement" src="cancion.mp3" preload="metadata"></audio>
+    <audio id="audioElement" src="cancion.mp3" preload="metadata" autoplay></audio>
 
     <script>
         const audio = document.getElementById('audioElement');

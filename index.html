@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor Tally - Estilo Rosa</title>
+    
+    <!-- Tipografía Lora -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Ajustes base para incrustar en Tally */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            font-family: 'Lora', serif;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal del reproductor */
+        .player-card {
+            background-color: #fdf0f5; /* Fondo rosa pastel */
+            border: 1px solid #fce1ea; /* Borde sutil */
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Tiempos (0:00 - 3:43) */
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            color: #9c6fbc;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Barra de progreso */
+        .progress-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 20px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e2d3ec; /* Color de la barra vacía */
+            border-radius: 10px;
+            outline: none;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* La parte que se va llenando (se controla por JS) */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 10px;
+        }
+
+        /* El puntito redondo (thumb) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #9c6fbc; /* Color morado oscuro */
+            cursor: pointer;
+            margin-top: -4px; /* Centrar el thumb */
+        }
+
+        /* Fila de controles */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .controls-left, .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Botones generales */
+        button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: #b391cb; /* Morado un poco más claro para los iconos */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.9);
+        }
+        
+        button:hover {
+            color: #9c6fbc; /* Se oscurece al pasar el mouse */
+        }
+
+        /* Tamaño de los iconos */
+        svg {
+            fill: currentColor;
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Icono de Play más grande */
+        #playBtn svg {
+            width: 32px;
+            height: 32px;
+            color: #9c6fbc; /* El play resalta más */
+        }
+
+        /* Iconos secundarios (repetir y volumen) un poco más chicos */
+        .controls-right svg {
+            width: 20px;
+            height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="player-card">
+        
+        <!-- Tiempos Arriba -->
+        <div class="time-display">
+            <span id="currentTime">0:00</span>
+            <span id="durationTime">0:00</span>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-wrapper">
+            <input type="range" id="progressBar" value="0" min="0" step="1">
+        </div>
+
+        <!-- Botones Abajo -->
+        <div class="controls">
+            <!-- Retroceder, Play/Pausa, Avanzar -->
+            <div class="controls-left">
+                <button id="prevBtn" title="Retroceder">
+                    <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                </button>
+                <button id="playBtn" title="Reproducir">
+                    <!-- Play Icon -->
+                    <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <!-- Pause Icon (Oculto) -->
+                    <svg id="iconPause" style="display: none;" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="nextBtn" title="Avanzar">
+                    <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                </button>
+            </div>
+
+            <!-- Repetir y Volumen -->
+            <div class="controls-right">
+                <button id="loopBtn" title="Repetir">
+                    <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                </button>
+                <button id="muteBtn" title="Silenciar">
+                    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AQUÍ PONES EL NOMBRE DE TU CANCIÓN -->
+    <audio id="audioElement" src="cancion.mp3" preload="metadata"></audio>
+
+    <script>
+        const audio = document.getElementById('audioElement');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const loopBtn = document.getElementById('loopBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const iconPlay = document.getElementById('iconPlay');
+        const iconPause = document.getElementById('iconPause');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationTimeEl = document.getElementById('durationTime');
+
+        let isPlaying = false;
+        let isLooping = false;
+
+        // Formato de tiempo (Minutos:Segundos)
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // Actualizar colores de la barra de progreso
+        function updateProgressBarColor() {
+            const value = (progressBar.value / progressBar.max) * 100 || 0;
+            progressBar.style.background = `linear-gradient(to right, #9c6fbc ${value}%, #e2d3ec ${value}%)`;
+        }
+
+        // Al cargar la info del audio
+        audio.addEventListener('loadedmetadata', () => {
+            progressBar.max = audio.duration;
+            durationTimeEl.textContent = formatTime(audio.duration);
+            updateProgressBarColor();
+        });
+
+        // Botón Play/Pausa
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+            } else {
+                audio.play();
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Actualizar barra mientras se reproduce
+        audio.addEventListener('timeupdate', () => {
+            progressBar.value = audio.currentTime;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+            updateProgressBarColor();
+        });
+
+        // Mover la barra manualmente
+        progressBar.addEventListener('input', () => {
+            audio.currentTime = progressBar.value;
+            currentTimeEl.textContent = formatTime(progressBar.value);
+            updateProgressBarColor();
+        });
+
+        // Al terminar la canción
+        audio.addEventListener('ended', () => {
+            if (!isLooping) {
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+                isPlaying = false;
+                progressBar.value = 0;
+                currentTimeEl.textContent = "0:00";
+                updateProgressBarColor();
+            }
+        });
+
+        // Adelantar / Atrasar (10 segundos)
+        prevBtn.addEventListener('click', () => {
+            audio.currentTime = Math.max(0, audio.currentTime - 10);
+        });
+        nextBtn.addEventListener('click', () => {
+            audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+        });
+
+        // Repetir (Loop)
+        loopBtn.addEventListener('click', () => {
+            isLooping = !isLooping;
+            audio.loop = isLooping;
+            loopBtn.style.color = isLooping ? "#9c6fbc" : "#b391cb";
+        });
+
+        // Silenciar (Mute)
+        muteBtn.addEventListener('click', () => {
+            audio.muted = !audio.muted;
+            muteBtn.style.opacity = audio.muted ? "0.5" : "1";
+        });
+    </script>
+</body>
+</html>
